@@ -9,18 +9,18 @@ import java.util.ArrayList;
  * 
  *       regular merge sort
  */
-public class Merge_Sort<Type extends Comparable<? super Type>> implements Sorter<Type>// implement sorter
+public class Merge_Sort <Type  extends Comparable <? super Type>> implements Sorter<Type>
 {
 
 	/**
-	 * a value for switching over to insertion sort
+	 * FIXME: have a value for switching over to insertion sort
 	 */
-	protected double SWITCH_OVER;
-	
+	double SWITCH_OVER;
 	/**
-	 * The name of the sort
+	 * FIXME: The name of the sort
 	 */
-	public String name_of_sort(){
+	public String name_of_sort()
+	{
 		return "Merge Sort";
 	}
 
@@ -38,15 +38,22 @@ public class Merge_Sort<Type extends Comparable<? super Type>> implements Sorter
 	 * @param high           the index of the ending value in the "virtual array"
 	 * 
 	 */
-	private void merge_sort( ArrayList<Type> array, ArrayList<Type> auxillary, int low, int high ){
+	private void merge_sort( ArrayList<Type> array, ArrayList<Type> auxillary, int low, int high )
+	{
 		
-		if(low < high){
-			int mid = (low+high)/2;
+		if(high-low>SWITCH_OVER)
+		{
+			int mid =(low+high)/2;
 			merge_sort(array, auxillary, low, mid);
-			merge_sort(array, auxillary, mid+1, high);
-			combine(array, auxillary, low, mid, high);
+			merge_sort(array,auxillary,mid+1,high);
+			combine(array,auxillary, low, mid, high);
+		}
+		else
+		{
+			Sort_Utils.insertion_sort(array, low,high);
 		}
 	}
+
 
 	/**
 	 * combine the values in array into the auxiliary
@@ -60,48 +67,55 @@ public class Merge_Sort<Type extends Comparable<? super Type>> implements Sorter
 	 * combine the sub arrays in the _array_ parameter. use the _auxillary_ parameter for scratch space
 	 */
 
-	private void combine( ArrayList<Type> array, ArrayList<Type> auxillary, int low, int mid, int high ){
-		
+	private void combine( ArrayList<Type> array, ArrayList<Type> auxillary, int low, int mid, int high )
+	{
 		int left = low;
 		int right = mid+1;
-		int index = low;
+		int count = low;
 		
-		while(index < high+1){
-			
-			if(array.get(left).compareTo(array.get(right)) <= 0){
+		while(count <= high){
+			if(array.get(left).compareTo(array.get(right)) < 0){
 				auxillary.add(array.get(left));
 				left++;
 				if(left > mid){
-					index++;
+					//finish right side
 					for(int rightIndex = right; rightIndex < high+1; rightIndex++){
 						auxillary.add(array.get(rightIndex));
 					}
 					break;
 				}
+				count++;
 			}
 			else {
 				auxillary.add(array.get(right));
 				right++;
 				if(right > high){
-					index++;
+					//finish left side
 					for(int leftIndex = left; leftIndex < mid+1; leftIndex++){
 						auxillary.add(array.get(leftIndex));
 					}
 					break;
 				}
+				count++;
 			}
-			index++;
+			
 		}
 		
-		for(int auxIndex = 0; auxIndex < auxillary.size(); auxIndex++){
-			array.set(low++, auxillary.get(auxIndex));
-		}	
+		//copy aux values to array
+		int auxIndex = 0;
+		for(int index = low; index <= high; index++){
+			array.set(index, auxillary.get(auxIndex));
+			auxIndex++;
+		}
+		//clear aux array
+		auxillary.clear();
 	}
 
 	/**
 	 * Allow the insertion sort cut off to be changed
 	 */
-	public void set_constant( double cutoff ){
+	public void set_constant( double cutoff )
+	{
 		SWITCH_OVER = cutoff;
 	}
 
@@ -111,13 +125,14 @@ public class Merge_Sort<Type extends Comparable<? super Type>> implements Sorter
 	@Override
 	public void sort( ArrayList<Type> array )
 	{
-		ArrayList<Type> auxillary = new ArrayList<Type>();
-		merge_sort(array, auxillary, 0, array.size()-1); 
+		ArrayList <Type> auxillaryArray = new ArrayList<Type>();
+		merge_sort(array,auxillaryArray,0,array.size()-1);
 	}
 
 	@Override
-	public Complexity_Class get_expected_complexity_class(){
-		return Complexity_Class.NlogN;
+	public Complexity_Class get_expected_complexity_class()
+	{
+		return Complexity_Class.NLOGN;
 	}
 
 }

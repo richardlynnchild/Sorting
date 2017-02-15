@@ -12,14 +12,16 @@ import java.util.ArrayList;
  *  Instrument it to allow the changing of the Insertion Sort Switch over
  * 
  */
-public abstract class Quick_Sort 
+public abstract class Quick_Sort <Type  extends Comparable <? super Type>> implements Sorter<Type>
     //FIXME: make generic on type comparable
     //FIXME: must implement the Sorter interface
 {
 	/**
 	 * create a field for the insertion sort switchover level
 	 */
-
+	double SWITCH_OVER;
+	
+	
 	/**
 	 *  Choose a Pivot (return it's value in the array)
 	 *  Modify array as appropriate (e.g., median of three will move smallest value to front of array)
@@ -48,6 +50,21 @@ public abstract class Quick_Sort
 		// WARNING: this code can be tricky to get just right.  do your best
 		// then pay attention in class on Tuesday
 		// PLEASE: please make an attempt before Tuesday
+		int end = right;
+		Type pivot = array.get(end);
+		while(true){
+			while(array.get(left).compareTo(pivot) < 0){
+				left++;
+			}
+			while(array.get(right-1).compareTo(pivot) > 0){
+				right--;
+				if(right<left){
+					break;
+				}
+			}
+			Sorter.swap(array, left, right);
+		}
+		Sorter.swap(array, left, end);
 	}
 
 	/**
@@ -75,6 +92,15 @@ public abstract class Quick_Sort
 		// 1) partition array
 		// 2) sort left
 		// 3) sort right           (again, don't resort the pivot)
+		
+		if(array.size()<SWITCH_OVER){
+			Sort_Utils.insertion_sort(array, start, end);
+		}
+		else {
+			int pivot = partition(array, start, end);
+			quick_sort(array, start, pivot-1);
+			quick_sort(array, pivot+1, end);
+		}
 
 	}
 
@@ -93,17 +119,24 @@ public abstract class Quick_Sort
 	 * Name the sort
 	 */
 	public abstract String name_of_sort();
+	
 
 	/**
 	 * The constant in this case is the insertion sort cutoff level... always greater than 3
 	 */
-	public void set_constant( double constant );
+	public void set_constant( double constant )
+	{
+		SWITCH_OVER = constant;
+	}
 	
 	/**
 	 * @return the expected complexity for quick sort 
 	 */
 	@Override
-	public Complexity_Class get_expected_complexity_class();
+	public Complexity_Class get_expected_complexity_class()
+	{
+		return Complexity_Class.NLOGN;
+	}
 
 
 
