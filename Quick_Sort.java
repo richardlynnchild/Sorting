@@ -62,9 +62,13 @@ public abstract class Quick_Sort <Type  extends Comparable <? super Type>> imple
 					break;
 				}
 			}
+			if(right<left){
+				break;
+			}
 			Sorter.swap(array, left, right);
 		}
 		Sorter.swap(array, left, end);
+		return left;
 	}
 
 	/**
